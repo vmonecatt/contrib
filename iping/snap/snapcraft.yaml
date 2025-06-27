@@ -1,15 +1,56 @@
 name: irods-iping # you probably want to 'snapcraft register <name>'
-base: core18 # the base snap is the execution environment for this snap
 version: '4.2.8' # just for humans, typically '1.2+git' or '1.3.2'
-summary: Monitor iRODS with this Nagios-compatible plugin # 79 char long summary
+base: core18
+summary: Monitor iRODS with this Nagios-compatible plugin
 description: |
-  This is my-snap's description. You have a paragraph or two to tell the
-  most important story about your snap. Keep it under 100 words though,
-  we live in tweetspace and your description wants to look good in the snap
-  store.
+  iping is a simple application which will ping the iRODS services on each server.
+  This application performs an rcConnect() to an iRODS server given the IP or
+  hostname and port.
+  The main use of iping is as a monitoring plugin for Nagios.
+
+  This snap comes from https://github.com/irods/contrib, a pooled collection
+  of community-contributed code that works alongside iRODS.
+
+  Copyright (c) 2025, iRODS Consortium
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+
+    Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+
+    Neither the name of the iRODS Consortium nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
+
+  This snap is not endorsed or supported by the iRODS Consortium nor any of
+  its contributors.
+
+license: BSD-3-Clause
 
 grade: devel # must be 'stable' to release into candidate/stable channels
 confinement: devmode # use 'strict' once you have the right plugs and slots
+
+# You have to use 'architectures' for base images core22 or older
+architectures:
+  - amd64
 
 package-repositories:
   - type: apt
@@ -24,4 +65,14 @@ parts:
   irods-externals:
     plugin: nil
     stage-packages:
-      - irods-runtime=4.2.8
+      - irods-runtime=4.2.8 # We don't need libc6 or libgcc. They're in the base image.
+
+  irods-iping:
+    plugin: dump
+    source: https://github.com/vmonecatt/contrib/raw/refs/heads/feature/snap/iping/snap/irods-iping_4.2.8~bionic_amd64.deb
+    source-type: deb
+    source-checksum: sha512/f924e209289061a8ba0bbb1dc38d5e8ad1c712780629968f09706b1265cd2b7114aaea15551af5e9d095d23f13fd14de32af52b7d1032c352f79ac4f1f5f9bf1
+
+apps:
+  irods-iping:
+    command: usr/bin/iping
